@@ -1,0 +1,49 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: |
+          package-lock.json
+          backend/package-lock.json
+          frontend/package-lock.json
+
+    - name: Install backend deps
+      run: npm ci --prefix backend
+
+    - name: Install frontend deps
+      run: npm ci --prefix frontend
+
+    - name: Lint backend
+      run: npm run lint --prefix backend
+
+    - name: Lint frontend
+      run: npm run lint --prefix frontend
+
+    - name: Test backend
+      run: npm test --prefix backend
+
+    - name: Build frontend
+      run: npm run build --prefix frontend
+
+    - name: Frontend secret guard (blocking)
+      run: node scripts/security/check-frontend-secrets.mjs
+
+    - name: Secret scan (non-blocking)
+      uses: gitleaks/gitleaks-action@v2
+      continue-on-error: true
