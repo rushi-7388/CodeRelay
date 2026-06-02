@@ -1,21 +1,28 @@
 import { config } from "./config";
+import { applySelectedApiUrl, selectFastestApiNode } from "./relayBalancer";
+import { updateAxiosBaseUrl } from "./axios";
 
-/**
- * Loads public runtime config from the backend so production builds
- * do not need secret-bearing VITE_* variables baked into the bundle.
- */
-export async function bootstrapPublicConfig() {
-  const base = config.apiUrl || "http://localhost:5000/api";
-  const url = `${base.replace(/\/$/, "")}/config/public`;
-
+async function loadPublicConfig(baseApiUrl) {
+  const url = `${baseApiUrl.replace(/\/$/, "")}/config/public`;
   try {
     const res = await fetch(url, { credentials: "omit" });
-    if (!res.ok) return config;
+    if (!res.ok) return;
     const data = await res.json();
     if (data.apiUrl) config.apiUrl = data.apiUrl;
     if (data.clerkPublishableKey) config.clerkPublishableKey = data.clerkPublishableKey;
-    return config;
   } catch {
-    return config;
+    // keep defaults
   }
+}
+
+/**
+ * Boot sequence: Relay Balance → public config → axios base URL.
+ */
+export async function bootstrapPublicConfig() {
+  const balance = await selectFastestApiNode();
+  applySelectedApiUrl(balance.apiUrl);
+  updateAxiosBaseUrl(config.apiUrl);
+  await loadPublicConfig(config.apiUrl);
+  updateAxiosBaseUrl(config.apiUrl);
+  return { config, balance };
 }

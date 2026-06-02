@@ -1,0 +1,13 @@
+# Optional local load balancer for CodeRelay API (development / demos)
+# Usage: docker compose -f docker-compose.lb.yml up -d
+# Point VITE_API_URLS at http://localhost:8080/api
+
+services:
+  nginx-lb:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

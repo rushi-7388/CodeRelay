@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "../..");
 
-const ALLOWED_VITE_KEYS = new Set(["VITE_API_URL", "VITE_CLERK_PUBLISHABLE_KEY"]);
+const ALLOWED_VITE_KEYS = new Set(["VITE_API_URL", "VITE_API_URLS", "VITE_CLERK_PUBLISHABLE_KEY"]);
 
 const FORBIDDEN_PATTERNS = [
   /sk-[A-Za-z0-9]{20,}/,

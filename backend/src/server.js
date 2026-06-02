@@ -14,7 +14,9 @@ import { initializeSocket } from "./lib/socket.js";
 import { createApiLimiter } from "./middleware/rateLimit.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 import { requestIdMiddleware } from "./middleware/requestId.js";
+import { metricsMiddleware } from "./middleware/metrics.js";
 import configRoutes from "./routes/configRoutes.js";
+import systemRoutes from "./routes/systemRoutes.js";
 
 import sessionRoutes from "./routes/sessionRoute.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -41,6 +43,7 @@ app.disable("x-powered-by");
 app.set("trust proxy", 1);
 
 app.use(requestIdMiddleware);
+app.use(metricsMiddleware);
 
 app.use(
   pinoHttp({
@@ -74,6 +77,7 @@ app.use(
 app.use(createApiLimiter());
 
 app.use("/api/config", configRoutes);
+app.use("/api/system", systemRoutes);
 app.use("/api/webhooks", webhookRoutes);
 app.use(clerkMiddleware()); // this adds auth field to request object: req.auth()
 

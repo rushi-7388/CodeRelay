@@ -12,7 +12,7 @@ windowCfg = getWindowConfig();
  * Only these VITE_* keys may appear in the frontend bundle.
  * All secrets must stay on the backend.
  */
-export const ALLOWED_PUBLIC_ENV_KEYS = ["VITE_API_URL", "VITE_CLERK_PUBLISHABLE_KEY"];
+export const ALLOWED_PUBLIC_ENV_KEYS = ["VITE_API_URL", "VITE_API_URLS", "VITE_CLERK_PUBLISHABLE_KEY"];
 
 export const config = {
   apiUrl:

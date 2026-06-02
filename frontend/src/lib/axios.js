@@ -3,7 +3,11 @@ import { config } from "./config";
 
 const axiosInstance = axios.create({
   baseURL: config.apiUrl,
-  withCredentials: true, // by adding this field browser will send the cookies to server automatically, on every single req
+  withCredentials: true,
 });
+
+export function updateAxiosBaseUrl(apiUrl) {
+  if (apiUrl) axiosInstance.defaults.baseURL = apiUrl.replace(/\/$/, "");
+}
 
 export default axiosInstance;
